@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Communikation.</title>
+  <link rel="icon" href="favicon_sq.png" type="image/png">
+
+  <style>
+    :root {
+      --black: #080808;
+      --white: #f0f0f0;
+      --red: #e01010;
+      --muted: rgba(240,240,240,0.5);
+      --subtle: rgba(240,240,240,0.07);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--black);
+      color: var(--white);
+      font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.045;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 200px 200px;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 1.6rem 3.5rem;
+      display: flex;
+      align-items: center;
+      z-index: 100;
+      background: linear-gradient(to bottom, rgba(8,8,8,0.98) 60%, transparent);
+    }
+
+    .logo-wrap svg {
+      height: 26px;
+      width: auto;
+      display: block;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 9rem 3.5rem 3rem;
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 2.2rem;
+      opacity: 0;
+      animation: riseIn 0.9s cubic-bezier(0.22,1,0.36,1) forwards 0.2s;
+    }
+
+    .hero-headline {
+      font-size: clamp(2.6rem, 5.5vw, 5.2rem);
+      font-weight: 800;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      opacity: 0;
+      animation: riseIn 0.9s cubic-bezier(0.22,1,0.36,1) forwards 0.4s;
+    }
+
+    .hero-headline .brand {
+      color: var(--red);
+    }
+
+    .divider {
+      width: 48px;
+      height: 2px;
+      background: var(--red);
+      margin: 3rem 0;
+      opacity: 0;
+      animation: riseIn 0.9s cubic-bezier(0.22,1,0.36,1) forwards 0.65s;
+    }
+
+    .hero-body {
+      font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+      line-height: 1.85;
+      color: var(--muted);
+      max-width: 580px;
+      font-weight: 400;
+      opacity: 0;
+      animation: riseIn 0.9s cubic-bezier(0.22,1,0.36,1) forwards 0.8s;
+    }
+
+    .scroll-cue {
+      margin-top: 4rem;
+      opacity: 0;
+      animation: riseIn 0.9s cubic-bezier(0.22,1,0.36,1) forwards 1.05s;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+
+
+    .scroll-cue span {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--red);
+    }
+
+    .scroll-cue .line {
+      width: 40px;
+      height: 1px;
+      background: var(--red);
+      opacity: 0.5;
+    }
+
+    /* ─── CONTACT ─── */
+    .contact-section {
+      position: relative;
+      z-index: 1;
+      padding: 2rem 3.5rem 7rem;
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: rgba(240,240,240,0.3);
+      margin-bottom: 2.5rem;
+    }
+
+    .form-card {
+      max-width: 640px;
+      border: 1px solid rgba(240,240,240,0.06);
+      border-left: 3px solid var(--red);
+      padding: 2.8rem;
+      background: rgba(255,255,255,0.018);
+      backdrop-filter: blur(4px);
+    }
+
+    .form-card-intro {
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 2.2rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: none;
+      border-bottom: 1px solid rgba(240,240,240,0.15);
+      color: var(--white);
+      padding: 0.9rem 0.5rem;
+      font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.3s ease;
+      -webkit-appearance: none;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-bottom-color: var(--red);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(240,240,240,0.25);
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+    }
+
+    .form-group textarea {
+      height: 120px;
+      resize: vertical;
+      margin-top: 1rem;
+    }
+
+    .submit-btn {
+      margin-top: 2rem;
+      background: var(--red);
+      color: var(--white);
+      border: none;
+      padding: 0.95rem 2.4rem;
+      font-family: Helvetica, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.25s ease, transform 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .submit-btn:hover {
+      background: #ff1f1f;
+      transform: translateY(-2px);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn .arrow {
+      transition: transform 0.2s;
+    }
+    .submit-btn:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    .success-msg {
+      display: none;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.7;
+      padding: 1.2rem 0;
+      border-left: 3px solid var(--red);
+      padding-left: 1.2rem;
+    }
+
+    .error-msg {
+      display: none;
+      font-size: 0.82rem;
+      color: #ff6b6b;
+      margin-top: 0.75rem;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 1.8rem 3.5rem;
+      border-top: 1px solid rgba(240,240,240,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-copy {
+      font-size: 0.68rem;
+      color: rgba(240,240,240,0.22);
+      letter-spacing: 0.1em;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .social-links a {
+      color: rgba(240,240,240,0.3);
+      text-decoration: none;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      transition: color 0.25s;
+      position: relative;
+    }
+
+    .social-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--red);
+      transition: width 0.25s;
+    }
+
+    .social-links a:hover {
+      color: var(--white);
+    }
+
+    .social-links a:hover::after {
+      width: 100%;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 700px) {
+      nav { padding: 1.3rem 1.5rem; }
+      .logo-wrap svg { height: 22px; }
+      .hero { padding: 7.5rem 1.5rem 2.5rem; }
+      .contact-section { padding: 2rem 1.5rem 5rem; }
+      .form-card { padding: 1.8rem 1.4rem; }
+      .form-row { grid-template-columns: 1fr; }
+      footer { padding: 1.5rem; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─── -->
+  <nav>
+    <div class="logo-wrap">
+      <!-- Communikation. wordmark SVG — fill changed to white -->
+      <svg viewBox="0 0 685.53 63.63" xmlns="http://www.w3.org/2000/svg" aria-label="Communikation.">
+        <path fill="#f0f0f0" d="M52.95,54.88l-1.1.91c-.73.6-1.83,1.34-3.29,2.2-1.46.86-3.12,1.71-4.96,2.55-1.84.85-4.07,1.57-6.68,2.18s-5.23.91-7.85.91c-6.26,0-11.59-1.33-15.99-3.97-4.4-2.65-7.68-6.31-9.84-10.99-2.16-4.68-3.24-10.2-3.24-16.56,0-3.2.3-6.31.91-9.31.6-3,1.58-5.9,2.93-8.69s3.01-5.22,4.98-7.28c1.97-2.07,4.42-3.72,7.34-4.96,2.93-1.24,6.17-1.85,9.73-1.85,1.87,0,3.47.07,4.81.19,1.34.13,2.86.49,4.56,1.08,1.7.59,3.12,1.43,4.26,2.52l1.29-2.68h11.77l.04,23.92h-11.28c.03-1.33-.11-2.64-.42-3.91-.3-1.28-.78-2.48-1.44-3.62-.66-1.14-1.59-2.05-2.8-2.75-1.21-.7-2.61-1.04-4.2-1.04-1.19,0-2.25.2-3.2.59-.95.39-1.73.89-2.35,1.5-.62.6-1.15,1.38-1.61,2.34-.45.96-.8,1.87-1.02,2.74-.23.87-.4,1.93-.53,3.16-.13,1.24-.2,2.27-.23,3.1s-.04,1.84-.04,3.03v1.67c-.08,1.13-.08,2.36,0,3.69.08,1.33.16,2.64.26,3.96.1,1.31.37,2.57.82,3.79.44,1.21.98,2.29,1.63,3.22s1.54,1.68,2.71,2.24c1.16.55,2.51.83,4.05.83,2.04,0,3.84-.6,5.39-1.8s2.52-2.81,2.9-4.83c.1-.5.2-1.69.3-3.56h11.39v15.52Z"/>
+        <path fill="#f0f0f0" d="M57.68,41.83c0-6.56,2.03-11.64,6.09-15.21,4.06-3.59,9.61-5.38,16.65-5.38s12.67,1.79,16.73,5.38c4.06,3.58,6.09,8.65,6.09,15.21,0,4.42-.97,8.25-2.89,11.51-1.93,3.25-4.61,5.72-8.02,7.38-3.42,1.66-7.38,2.5-11.87,2.5s-8.45-.83-11.87-2.5c-3.42-1.67-6.09-4.13-8.02-7.38-1.93-3.25-2.89-7.09-2.89-11.51ZM75.28,41.9c0,6.34,1.73,9.5,5.18,9.5s5.19-3.17,5.19-9.5c0-1.28-.06-2.38-.17-3.27-.11-.89-.34-1.81-.66-2.74-.33-.93-.86-1.64-1.59-2.12s-1.65-.72-2.76-.72-2.03.24-2.76.72-1.26,1.19-1.59,2.12c-.33.93-.55,1.85-.66,2.74-.11.89-.17,1.99-.17,3.27Z"/>
+        <path fill="#f0f0f0" d="M135.88,62.53v-24.15c0-2.52-1.41-3.79-4.24-3.79-.88,0-1.59.26-2.12.78-.53.52-.94,1.16-1.23,1.91-.29.76-.49,1.57-.59,2.44-.1.87-.15,1.64-.15,2.33v9.01h3.03v11.47h-22.52v-11.32h2.76v-17.49h-2.8v-11.77h19.53v6.43c.86-1.18,1.84-2.22,2.93-3.12,1.1-.89,2.25-1.64,3.46-2.25,1.21-.6,2.45-1.06,3.71-1.36,1.26-.3,2.5-.45,3.71-.45,2.12,0,4.07.65,5.85,1.96,1.78,1.31,3.21,3.2,4.3,5.64,3.41-5.07,7.81-7.61,13.21-7.61,1.77,0,3.45.25,5.05.75,1.6.51,3.01,1.31,4.22,2.41,1.21,1.1,2.18,2.51,2.9,4.26.72,1.74,1.08,3.85,1.08,6.32v16.05h2.8v11.54h-20.02v-24.04c-.12-1.21-.5-2.2-1.13-2.95-.63-.76-1.51-1.14-2.65-1.14-.81,0-1.49.16-2.04.47-.55.32-1.02.76-1.38,1.33-.37.57-.64,1.23-.82,1.99-.18.76-.28,1.56-.3,2.43v10.37h3.22v11.54h-19.76Z"/>
+        <path fill="#f0f0f0" d="M214.34,62.53v-24.15c0-2.52-1.41-3.79-4.24-3.79-.88,0-1.59.26-2.12.78-.53.52-.94,1.16-1.23,1.91-.29.76-.49,1.57-.59,2.44-.1.87-.15,1.64-.15,2.33v9.01h3.03v11.47h-22.52v-11.32h2.76v-17.49h-2.8v-11.77h19.53v6.43c.86-1.18,1.84-2.22,2.93-3.12,1.1-.89,2.25-1.64,3.46-2.25,1.21-.6,2.45-1.06,3.71-1.36,1.26-.3,2.5-.45,3.71-.45,2.12,0,4.07.65,5.85,1.96,1.78,1.31,3.21,3.2,4.3,5.64,3.41-5.07,7.81-7.61,13.21-7.61,1.77,0,3.45.25,5.05.75,1.6.51,3.01,1.31,4.22,2.41,1.21,1.1,2.18,2.51,2.9,4.26.72,1.74,1.08,3.85,1.08,6.32v16.05h2.8v11.54h-20.02v-24.04c-.12-1.21-.5-2.2-1.13-2.95-.63-.76-1.51-1.14-2.65-1.14-.81,0-1.49.16-2.04.47-.55.32-1.02.76-1.38,1.33-.37.57-.64,1.23-.82,1.99-.18.76-.28,1.56-.3,2.43v10.37h3.22v11.54h-19.76Z"/>
+        <path fill="#f0f0f0" d="M291.89,56.62c-1.39,2.14-3.25,3.78-5.58,4.9-2.33,1.12-4.99,1.68-7.97,1.68-8.33,0-12.49-5.08-12.49-15.25v-14.23h-3.03v-11.77h21.72v24c0,1.34.34,2.43,1.02,3.27.68.85,1.48,1.27,2.39,1.27,1.19,0,2.14-.43,2.86-1.3.72-.87,1.08-1.95,1.08-3.24v-12.22h-3.06v-11.77h21.76v29.03h2.88v11.54h-21.57v-5.9Z"/>
+        <path fill="#f0f0f0" d="M341.29,27.86c1.39-2.14,3.25-3.79,5.58-4.94,2.33-1.15,4.99-1.72,7.97-1.72,8.33,0,12.49,5.19,12.49,15.59v14.19h3.03v11.54h-21.72v-23.73c0-1.21-.34-2.21-1.02-2.99-.68-.78-1.48-1.17-2.39-1.17-1.19,0-2.14.42-2.86,1.25-.72.83-1.08,1.84-1.08,3.02v12.07h3.33v11.54h-24.9v-11.54h3.14v-17.26h-2.88v-11.77h21.31v5.9Z"/>
+        <path fill="#f0f0f0" d="M397.42,50.98h3.18v11.54h-24.49v-11.54h3.1v-17.26h-3.37v-11.77h21.57v29.03ZM394.52,17.01c2.08-1.71,3.12-4.01,3.12-6.91s-1.01-5.11-3.03-6.77c-2.02-1.67-4.63-2.5-7.83-2.5s-5.6.83-7.55,2.5c-1.96,1.67-2.93,3.92-2.93,6.77s1,5.2,2.99,6.91c1.99,1.7,4.49,2.55,7.49,2.55s5.66-.85,7.74-2.55Z"/>
+        <path fill="#f0f0f0" d="M427.66,45.95v16.58h-21.84v-11.54h3.14V12.19h-3.18V.68h21.88v39.63l7.61-6.59h-3.6v-11.77h22.1v11.77h-5.71l-5.41,4.43v.99l8.59,11.85h4.35v11.54h-17.15l-10.79-16.58Z"/>
+        <path fill="#f0f0f0" d="M525.69,60.67l-1.4.64c-.93.43-2.37.85-4.31,1.27-1.94.42-3.92.63-5.94.63-9.64,0-14.43-5.08-14.38-15.25l.04-14.23h-4.09v-11.77h3.9v-8.67l18.43-3.98v12.64h5.75v11.77h-5.75l-.04,12.22c0,.99.26,1.89.8,2.71.53.82,1.5,1.23,2.91,1.23,1.14,0,2.5-.18,4.09-.53v11.32Z"/>
+        <path fill="#f0f0f0" d="M552.07,50.98h3.18v11.54h-24.49v-11.54h3.1v-17.26h-3.37v-11.77h21.57v29.03ZM549.17,17.01c2.08-1.71,3.12-4.01,3.12-6.91s-1.01-5.11-3.03-6.77c-2.02-1.67-4.63-2.5-7.83-2.5s-5.6.83-7.55,2.5c-1.96,1.67-2.93,3.92-2.93,6.77s1,5.2,2.99,6.91c1.99,1.7,4.49,2.55,7.49,2.55s5.66-.85,7.74-2.55Z"/>
+        <path fill="#f0f0f0" d="M559.07,41.83c0-6.56,2.03-11.64,6.09-15.21,4.06-3.59,9.61-5.38,16.65-5.38s12.67,1.79,16.73,5.38c4.06,3.58,6.09,8.65,6.09,15.21,0,4.42-.97,8.25-2.89,11.51-1.93,3.25-4.61,5.72-8.02,7.38-3.42,1.66-7.38,2.5-11.87,2.5s-8.45-.83-11.87-2.5c-3.42-1.67-6.09-4.13-8.02-7.38-1.93-3.25-2.89-7.09-2.89-11.51ZM576.67,41.9c0,6.34,1.73,9.5,5.18,9.5s5.19-3.17,5.19-9.5c0-1.28-.06-2.38-.17-3.27-.11-.89-.34-1.81-.66-2.74-.33-.93-.86-1.64-1.59-2.12-.73-.48-1.65-.72-2.76-.72s-2.03.24-2.76.72c-.73.48-1.26,1.19-1.59,2.12-.33.93-.55,1.85-.66,2.74-.11.89-.17,1.99-.17,3.27Z"/>
+        <path fill="#f0f0f0" d="M630.87,27.86c1.39-2.14,3.25-3.79,5.58-4.94,2.33-1.15,4.99-1.72,7.97-1.72,8.33,0,12.49,5.19,12.49,15.59v14.19h3.03v11.54h-21.72v-23.73c0-1.21-.34-2.21-1.02-2.99-.68-.78-1.48-1.17-2.39-1.17-1.19,0-2.14.42-2.86,1.25-.72.83-1.08,1.84-1.08,3.02v12.07h3.33v11.54h-24.9v-11.54h3.14v-17.26h-2.88v-11.77h21.31v5.9Z"/>
+        <path fill="#f0f0f0" d="M674.66,63.55c-3,0-5.5-.85-7.49-2.55-1.99-1.7-2.99-4.01-2.99-6.91s.98-5.11,2.93-6.77c1.95-1.67,4.47-2.5,7.55-2.5s5.82.83,7.84,2.5c2.02,1.66,3.03,3.92,3.03,6.77s-1.04,5.21-3.12,6.91c-2.08,1.7-4.66,2.55-7.74,2.55Z"/>
+        <path fill="#f0f0f0" d="M462.04,62.8v-19.82h11.28c0-6.07-3.76-9.98-11.28-11.74v-10.02c20.73,1.01,31.1,10.69,31.1,29.04v12.54h-31.1Z"/>
+      </svg>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <p class="hero-eyebrow">A note from us</p>
+    <h1 class="hero-headline">
+      <span class="brand">Communikation.</span><br>
+      Built on passion, design,<br>
+      and the belief that every brand<br>
+      has a story worth telling.
+    </h1>
+    <div class="divider"></div>
+    <p class="hero-body">
+      After a wonderful run, we are no longer taking on new clients. But we haven't forgotten what it means to need the right creative partner. Drop us a note below — we'd be glad to help you find your way to an agency that gets you. <span style="color: var(--red);">Send us a note.</span>
+    </p>
+  </section>
+
+  <!-- ─── CONTACT ─── -->
+  <section class="contact-section" id="contact">
+    <p class="section-label">Get in touch</p>
+    <div class="form-card">
+      <p class="form-card-intro">
+        Have a question, a pending matter, or looking for an agency recommendation?
+        We're still here — send us a note and we'll get back to you.
+      </p>
+      <form id="contact-form" action="" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <input type="text" name="name" placeholder="Your Name" required autocomplete="name">
+          </div>
+          <div class="form-group">
+            <input type="email" name="email" placeholder="Your Email" required autocomplete="email">
+          </div>
+        </div>
+        <div class="form-group">
+          <textarea name="message" placeholder="Your message or requirements..." required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">
+          Send Note <span class="arrow">→</span>
+        </button>
+        <p class="error-msg" id="error-msg">Something went wrong. Please try again or email us directly.</p>
+      </form>
+      <div class="success-msg" id="success-msg">
+        Thank you — we've received your note and will be in touch shortly.
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <span class="footer-copy">© Communikation. All rights reserved.</span>
+    <div class="social-links">
+      <a href="https://www.facebook.com/communikation.in" target="_blank" rel="noopener noreferrer">Facebook</a>
+      <a href="https://www.linkedin.com/company/communikation" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </div>
+  </footer>
+
+  <script>
+    const form = document.getElementById('contact-form');
+    const successMsg = document.getElementById('success-msg');
+    const errorMsg = document.getElementById('error-msg');
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = form.querySelector('.submit-btn');
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          form.style.display = 'none';
+          successMsg.style.display = 'block';
+        } else {
+          throw new Error('Server error');
+        }
+      } catch (err) {
+        btn.textContent = 'Send Note →';
+        btn.disabled = false;
+        errorMsg.style.display = 'block';
+      }
+    });
+  </script>
+
+</body>
+</html>
